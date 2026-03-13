@@ -5,9 +5,17 @@ interface NavigationProps {
   currentPage: 'home' | 'add-recipe' | 'recipes' | 'favourites' | 'profile';
   onNavigate: (page: 'home' | 'add-recipe' | 'recipes' | 'favourites' | 'profile') => void;
   userName?: string;
+  user?: any;
+  onShowLogin?: () => void;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate, userName }) => {
+export const Navigation: React.FC<NavigationProps> = ({ 
+  currentPage, 
+  onNavigate, 
+  userName, 
+  user,
+  onShowLogin 
+}) => {
   const navItems = [
     { id: 'home' as const, label: 'Home', icon: Home },
     { id: 'recipes' as const, label: 'Recipes', icon: BookOpen },
@@ -31,12 +39,24 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate,
                 <ChefHat className="w-4 h-4 text-white" />
               </div>
               <h1 className="text-lg font-black tracking-tight text-primary">
-                {userName ? `${userName}'s Kitchen` : 'Your Kitchen'}
+                {user ? `${user.email?.split('@')[0]}'s Kitchen` : userName ? `${userName}'s Kitchen` : 'Your Kitchen'}
               </h1>
             </div>
 
             {/* Navigation Items */}
-            <div className="flex items-center" style={{ gap: '28px' }}>
+            <div className="flex items-center gap-4">
+              {/* Login Button for Desktop - Guest Users Only */}
+              {!user && onShowLogin && (
+                <button
+                  onClick={onShowLogin}
+                  className="btn-primary py-2 px-4 text-sm"
+                >
+                  <User className="w-4 h-4" />
+                  Sign In
+                </button>
+              )}
+              
+              <div className="flex items-center" style={{ gap: '28px' }}>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentPage === item.id;
@@ -58,6 +78,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate,
                   </button>
                 );
               })}
+              </div>
             </div>
           </div>
         </div>
@@ -109,8 +130,19 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate,
           <ChefHat className="w-4 h-4 text-white" />
         </div>
         <h1 className="text-lg font-black text-primary">
-          {userName ? `${userName}'s Kitchen` : 'Your Kitchen'}
+          {user ? `${user.email?.split('@')[0]}'s Kitchen` : userName ? `${userName}'s Kitchen` : 'Your Kitchen'}
         </h1>
+        
+        {/* Login Button for Mobile - Guest Users Only */}
+        {!user && onShowLogin && (
+          <button
+            onClick={onShowLogin}
+            className="ml-auto mr-4 btn-primary py-1 px-3 text-xs"
+          >
+            <User className="w-3 h-3" />
+            Sign In
+          </button>
+        )}
       </div>
     </>
   );
